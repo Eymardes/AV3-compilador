@@ -1,53 +1,81 @@
-// --- Terminais (removi VIRG pois não está sendo usado) ---
-terminal IF, ELSE, WHILE, RETURN;
-terminal IGUAL, DIFERENTE, MAIOR, MENOR, MAIOR_IGUAL, MENOR_IGUAL, ATRIBUI;
-terminal MAIS, MENOS, MULT, DIV;
-terminal PV, AP, FP, AC, FC;
-terminal NUM_INT, NUM_FLOAT, ID;
-terminal LOWER_THAN_ELSE;
+// Terminais (apenas tokens reais do scanner)
+terminal
+    IF, ELSE, WHILE, RETURN,
+    IGUAL, DIFERENTE, MAIOR, MENOR, MAIOR_IGUAL, MENOR_IGUAL, ATRIBUI,
+    MAIS, MENOS, MULT, DIV,
+    PV, AP, FP, AC, FC,
+    NUM_INT, NUM_FLOAT, ID;
 
-// --- Não-terminais ---
-nonterminal Program, Statement, Statements, Expr;
+// Não-terminais
+nonterminal
+    Program,
+    Statement,
+    Statements,
+    Expr;
 
-// --- Precedência de operadores ---
+// Precedência (apenas tokens reais)
 precedence left IGUAL, DIFERENTE;
 precedence left MENOR, MENOR_IGUAL, MAIOR, MAIOR_IGUAL;
 precedence left MAIS, MENOS;
 precedence left MULT, DIV;
-precedence nonassoc LOWER_THAN_ELSE;  // Para resolver conflito do ELSE
-precedence nonassoc ELSE;            // ELSE tem maior precedência
 
-// --- Símbolo inicial ---
+// Resolução do conflito IF-ELSE
+precedence nonassoc ELSE;
+
+// Símbolo inicial
 start with Program;
 
-// --- Regras de produção ---
-Program ::= Statements
-          ;
+// Regras de produção
+Program ::=
+    Statements
+;
 
-Statements ::= Statements Statement
-             | Statement
-             ;
+Statements ::=
+    Statements Statement
+|
+    Statement
+;
 
-Statement ::= IF AP Expr FP Statement %prec LOWER_THAN_ELSE  // IF com possível ELSE
-            | IF AP Expr FP Statement ELSE Statement         // IF-ELSE
-            | WHILE AP Expr FP Statement
-            | RETURN Expr PV
-            | ID ATRIBUI Expr PV
-            | AC Statements FC
-            ;
+Statement ::=
+    IF AP Expr FP Statement %prec ELSE
+|
+    IF AP Expr FP Statement ELSE Statement
+|
+    WHILE AP Expr FP Statement
+|
+    RETURN Expr PV
+|
+    ID ATRIBUI Expr PV
+|
+    AC Statements FC
+;
 
-Expr ::= Expr IGUAL Expr
-       | Expr DIFERENTE Expr
-       | Expr MENOR Expr
-       | Expr MENOR_IGUAL Expr
-       | Expr MAIOR Expr
-       | Expr MAIOR_IGUAL Expr
-       | Expr MAIS Expr
-       | Expr MENOS Expr
-       | Expr MULT Expr
-       | Expr DIV Expr
-       | AP Expr FP
-       | NUM_INT
-       | NUM_FLOAT
-       | ID
-       ;
+Expr ::=
+    Expr MAIS Expr
+|
+    Expr MENOS Expr
+|
+    Expr MULT Expr
+|
+    Expr DIV Expr
+|
+    Expr IGUAL Expr
+|
+    Expr DIFERENTE Expr
+|
+    Expr MENOR Expr
+|
+    Expr MENOR_IGUAL Expr
+|
+    Expr MAIOR Expr
+|
+    Expr MAIOR_IGUAL Expr
+|
+    AP Expr FP
+|
+    NUM_INT
+|
+    NUM_FLOAT
+|
+    ID
+;
