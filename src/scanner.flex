@@ -33,7 +33,6 @@
 
 /* Delimitadores */
 ";"             { return new Symbol(sym.PV); }
-","             { return new Symbol(sym.VIRG); }
 "("             { return new Symbol(sym.AP); }
 ")"             { return new Symbol(sym.FP); }
 "{"             { return new Symbol(sym.AC); }
