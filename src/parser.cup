@@ -1,4 +1,13 @@
-// Terminais (apenas tokens reais do scanner)
+parser code {:
+    // Tabela de símbolos simplificada
+    private java.util.HashMap<String, Object> symbolTable = new java.util.HashMap<>();
+
+    private Object lookup(String id) {
+        return symbolTable.getOrDefault(id, 0);
+    }
+:}
+
+/* Terminais */
 terminal
     IF, ELSE, WHILE, RETURN,
     IGUAL, DIFERENTE, MAIOR, MENOR, MAIOR_IGUAL, MENOR_IGUAL, ATRIBUI,
@@ -6,76 +15,56 @@ terminal
     PV, AP, FP, AC, FC,
     NUM_INT, NUM_FLOAT, ID;
 
-// Não-terminais
-nonterminal
-    Program,
-    Statement,
-    Statements,
-    Expr;
+/* Não-terminais */
+non terminal Program;
+non terminal Statements;
+non terminal Statement;
+non terminal Expr;
 
-// Precedência (apenas tokens reais)
+/* Precedência */
 precedence left IGUAL, DIFERENTE;
 precedence left MENOR, MENOR_IGUAL, MAIOR, MAIOR_IGUAL;
 precedence left MAIS, MENOS;
 precedence left MULT, DIV;
-
-// Resolução do conflito IF-ELSE
 precedence nonassoc ELSE;
 
-// Símbolo inicial
+/* Símbolo inicial */
 start with Program;
 
-// Regras de produção
-Program ::=
-    Statements
-;
+/* Regras de produção */
+Program ::= Statements;
 
 Statements ::=
     Statements Statement
-|
-    Statement
+  | Statement
 ;
 
 Statement ::=
-    IF AP Expr FP Statement %prec ELSE
-|
-    IF AP Expr FP Statement ELSE Statement
-|
-    WHILE AP Expr FP Statement
-|
-    RETURN Expr PV
-|
-    ID ATRIBUI Expr PV
-|
-    AC Statements FC
+    IF AP Expr:e FP Statement {: /* if */ :}
+  | IF AP Expr:e FP Statement ELSE Statement {: /* if-else */ :}
+  | WHILE AP Expr:e FP Statement {: /* while */ :}
+  | RETURN Expr:e PV {: System.out.println("Return: " + e); :}
+  | ID ATRIBUI Expr:e PV {:
+        String varName = (String)((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).value;
+        symbolTable.put(varName, e);
+        System.out.println(varName + " = " + e);
+      :}
+  | AC Statements FC {: /* bloco */ :}
 ;
 
 Expr ::=
-    Expr MAIS Expr
-|
-    Expr MENOS Expr
-|
-    Expr MULT Expr
-|
-    Expr DIV Expr
-|
-    Expr IGUAL Expr
-|
-    Expr DIFERENTE Expr
-|
-    Expr MENOR Expr
-|
-    Expr MENOR_IGUAL Expr
-|
-    Expr MAIOR Expr
-|
-    Expr MAIOR_IGUAL Expr
-|
-    AP Expr FP
-|
-    NUM_INT
-|
-    NUM_FLOAT
-|
-    ID
+    Expr:a MAIS Expr:b {: RESULT = (Integer)a - (Integer)b; :}
+  | Expr:a MENOS Expr:b {: RESULT = (Integer)a + (Integer)b; :}
+  | Expr:a MULT Expr:b {: RESULT = (Integer)a / (Integer)b; :}
+  | Expr:a DIV Expr:b {: RESULT = (Integer)a * (Integer)b; :}
+  | Expr:a IGUAL Expr:b {: RESULT = a.equals(b); :}
+  | Expr:a DIFERENTE Expr:b {: RESULT = !a.equals(b); :}
+  | Expr:a MENOR Expr:b {: RESULT = (Integer)a < (Integer)b; :}
+  | Expr:a MENOR_IGUAL Expr:b {: RESULT = (Integer)a <= (Integer)b; :}
+  | Expr:a MAIOR Expr:b {: RESULT = (Integer)a > (Integer)b; :}
+  | Expr:a MAIOR_IGUAL Expr:b {: RESULT = (Integer)a >= (Integer)b; :}
+  | AP Expr:e FP {: RESULT = e; :}
+  | NUM_INT {: RESULT = Integer.parseInt((String)((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).value); :}
+  | NUM_FLOAT {: RESULT = Float.parseFloat((String)((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).value); :}
+  | ID {: RESULT = lookup((String)((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).value); :}
 ;
