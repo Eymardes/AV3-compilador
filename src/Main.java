@@ -4,10 +4,10 @@ import java_cup.runtime.Symbol;
 public class Main {
     public static void main(String[] args) {
         try {
-            // Inicializa o Scanner (JFlex) com o arquivo de entrada
+
             Scanner scanner = new Scanner(new FileReader("input.txt"));
 
-            // Testa a análise léxica
+
             boolean lexicoOk = true;
             try {
                 Symbol token;
@@ -26,7 +26,6 @@ public class Main {
                 System.out.println("Arquivo passou na análise léxica.");
             }
 
-            // Reinicializa o scanner para análise sintática
             scanner = new Scanner(new FileReader("input.txt"));
             Parser parser = new Parser(scanner);
             try {

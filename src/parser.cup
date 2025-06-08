@@ -1,5 +1,5 @@
 parser code {:
-    // Tabela de símbolos simplificada
+
     private java.util.HashMap<String, Object> symbolTable = new java.util.HashMap<>();
 
     private Object lookup(String id) {
@@ -7,7 +7,7 @@ parser code {:
     }
 :}
 
-/* Terminais */
+
 terminal
     IF, ELSE, WHILE, RETURN,
     IGUAL, DIFERENTE, MAIOR, MENOR, MAIOR_IGUAL, MENOR_IGUAL, ATRIBUI,
@@ -15,23 +15,23 @@ terminal
     PV, AP, FP, AC, FC,
     NUM_INT, NUM_FLOAT, ID;
 
-/* Não-terminais */
+
 non terminal Program;
 non terminal Statements;
 non terminal Statement;
 non terminal Expr;
 
-/* Precedência */
+
 precedence left IGUAL, DIFERENTE;
 precedence left MENOR, MENOR_IGUAL, MAIOR, MAIOR_IGUAL;
 precedence left MAIS, MENOS;
 precedence left MULT, DIV;
 precedence nonassoc ELSE;
 
-/* Símbolo inicial */
+
 start with Program;
 
-/* Regras de produção */
+
 Program ::= Statements;
 
 Statements ::=

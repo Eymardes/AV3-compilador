@@ -84,4 +84,7 @@
 [ \t\r\n\f]     { /* Ignorar */ }
 
 /* Erros */
-.               { System.err.println("Caractere inválido: '" + yytext() + "'"); }
+.               {
+    System.err.println("Caractere inválido: '" + yytext() + "'");
+    throw new RuntimeException("Caractere inválido: '" + yytext() + "'");
+}
